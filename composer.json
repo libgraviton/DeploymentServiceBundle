@@ -8,10 +8,8 @@
             "homepage": "https://github.com/libgraviton/DeploymentServiceBundle/graphs/contributors"
         }
     ],
-    "minimum-stability": "dev",
-    "prefer-stable": true,
-    "non-feature-branches": ["master", "develop", "support/*"],
     "require": {
+        "jean85/pretty-package-versions": "~1"
     },
     "autoload": {
         "psr-4": {
