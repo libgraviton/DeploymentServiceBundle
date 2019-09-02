@@ -1,0 +1,21 @@
+{
+    "name": "graviton/deployment-service-bundle",
+    "description": "Bundle that helps what to do if services are deployed with multiple instances",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "List of contributors",
+            "homepage": "https://github.com/libgraviton/DeploymentServiceBundle/graphs/contributors"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "non-feature-branches": ["master", "develop", "support/*"],
+    "require": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Graviton\\DeploymentServiceBundle\\": "src/"
+        }
+    }
+}
