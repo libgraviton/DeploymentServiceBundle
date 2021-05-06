@@ -12,6 +12,7 @@ use Jean85\Version;
 use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -54,6 +55,7 @@ class CheckForNeededDeploymentCommand extends Command
         parent::configure();
 
         $this->setName('graviton:check-deployment')
+            ->addOption('hash', null, InputOption::VALUE_REQUIRED, 'optional hash to check', null)
             ->setDescription(
                 'Checks if for the current commit hash it is needed to run external on-startup deployment things'
             );
@@ -69,34 +71,46 @@ class CheckForNeededDeploymentCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        // sleep random amount of time between 0.5 and 2s
-        $randsleep = mt_rand(500, 2000);
+        // sleep random amount of time between 0.5 and 3s
+        $randsleep = mt_rand(0.5, 3000);
         usleep($randsleep * 1000);
-        
+
         $repo = $this->dm->getRepository(Deployment::class);
         $currentVersion = PrettyVersions::getVersion($this->selfPackageName);
         $currentCommitHash = $currentVersion->getCommitHash();
-        
+
+        // what we search/persist
+        $packageName = $this->selfPackageName;
+        $gitHash = $currentCommitHash;
+
+        $customHash = $input->getOption('hash');
+        if (!is_null($customHash)) {
+            $packageName = 'custom-hash';
+            $gitHash = $customHash;
+        }
+
         // something there for current hash?
         $existing = $repo->findOneBy([
-            'packageName' => $this->selfPackageName,
-            'commitHash' => $currentCommitHash
+            'packageName' => $packageName,
+            'commitHash' => $gitHash
         ]);
 
         if (!is_null($existing)) {
             // say no -> nothing needs to be done!
             echo 'NO';
-            return;
+            return 0;
         }
 
         $deployment = new Deployment();
-        $deployment->setPackageName($this->selfPackageName);
-        $deployment->setCommitHash($currentCommitHash);
+        $deployment->setPackageName($packageName);
+        $deployment->setCommitHash($gitHash);
         $deployment->setCreatedAt(new \DateTime());
 
         $this->dm->persist($deployment);
         $this->dm->flush();
 
         echo 'YES';
+
+        return 0;
     }
 }
