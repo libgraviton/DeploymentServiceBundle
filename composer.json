@@ -9,8 +9,7 @@
         }
     ],
     "require": {
-        "composer-runtime-api": "^2",
-        "jean85/pretty-package-versions": "~1|~2"
+        "composer-runtime-api": "^2"
     },
     "autoload": {
         "psr-4": {

@@ -5,11 +5,9 @@
 
 namespace Graviton\DeploymentServiceBundle\Command;
 
+use Composer\InstalledVersions;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Graviton\DeploymentServiceBundle\Document\Deployment;
-use Jean85\PrettyVersions;
-use Jean85\Version;
-use PackageVersions\Versions;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -72,12 +70,12 @@ class CheckForNeededDeploymentCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // sleep random amount of time between 0.5 and 3s
-        $randsleep = mt_rand(0.5, 3000);
+        $randsleep = mt_rand(0.5, 2500);
         usleep($randsleep * 1000);
 
         $repo = $this->dm->getRepository(Deployment::class);
-        $currentVersion = PrettyVersions::getVersion($this->selfPackageName);
-        $currentCommitHash = $currentVersion->getCommitHash();
+
+        $currentCommitHash = InstalledVersions::getReference($this->selfPackageName);
 
         // what we search/persist
         $packageName = $this->selfPackageName;
